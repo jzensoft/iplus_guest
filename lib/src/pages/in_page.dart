@@ -1,20 +1,15 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
-import 'package:esc_pos_printer/esc_pos_printer.dart';
-import 'package:esc_pos_utils/esc_pos_utils.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:image/image.dart' as img;
 import 'package:iplus_guest/src/model/user.dart';
 import 'package:iplus_guest/src/pages/setting_page.dart';
 import 'package:iplus_guest/src/utils/boxes.dart';
+import 'package:iplus_guest/src/utils/print_util.dart';
 import 'package:iplus_guest/src/widgets/clip.dart';
 import 'package:iplus_guest/src/widgets/paint.dart';
 
@@ -372,59 +367,7 @@ class _InPageState extends State<InPage> {
   }
 
   void _handlePrint() async {
-    const paperSize = PaperSize.mm58;
-    final profile = await CapabilityProfile.load();
-    final printer = NetworkPrinter(paperSize, profile);
-    final PosPrintResult res =
-        await printer.connect(API.printerIpAddress, port: API.printerPort);
-    if (res == PosPrintResult.success) {
-      testReceipt1(printer);
-      printer.disconnect();
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              "พิมพ์สำเร็จ",
-            ),
-          ),
-        );
-      }
-    } else {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              "การเชื่อมต่อเครื่องพิมพ์ ล้มเหลว กรุณาลองอีกครั้ง",
-            ),
-          ),
-        );
-      }
-    }
-  }
-
-  void testReceipt(NetworkPrinter printer) {
-    // printer.text(
-    //   'สวัสดี',
-    //   styles: const PosStyles(
-    //     height: PosTextSize.size8,
-    //     width: PosTextSize.size8,
-    //     align: PosAlign.center,
-    //   ),
-    // );
-    String msg = "สวัสดี";
-    List<int> bytes = utf8.encode(msg);
-    printer.rawBytes(bytes);
-    printer.cut();
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            "พิมพ์สำเร็จ",
-          ),
-        ),
-      );
-    }
+    PrintUtil().printData();
   }
 
   void _handleTakePicture(bool isDetectCard) async {
@@ -561,57 +504,5 @@ class _InPageState extends State<InPage> {
       ),
     );
     widget.onSaved();
-  }
-
-  void testReceipt1(NetworkPrinter printer) async {
-    // final List<int> imageBytes = await _generateImageFromString(
-    //   "Hi",
-    //   TextAlign.center,
-    // );
-    //
-    // var image = img.decodeImage(imageBytes);
-    // printer.image(image!);
-
-    final ByteData data =
-        await rootBundle.load('assets/images/1676944007216.jpg');
-    final Uint8List bytes = data.buffer.asUint8List();
-    final image = img.decodeImage(bytes);
-    printer.image(image!);
-  }
-
-  Future<Uint8List> _generateImageFromString(
-    String text,
-    TextAlign align,
-  ) async {
-    PictureRecorder recorder = PictureRecorder();
-    Canvas canvas = Canvas(
-        recorder,
-        Rect.fromCenter(
-          center: Offset(0, 0),
-          width: 550,
-          height: 400, // cheated value, will will clip it later...
-        ));
-    TextSpan span = TextSpan(
-      style: const TextStyle(
-        color: Colors.black,
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-      ),
-      text: text,
-    );
-    TextPainter tp = TextPainter(
-        text: span,
-        maxLines: 3,
-        textAlign: align,
-        textDirection: TextDirection.ltr);
-    tp.layout(minWidth: 550, maxWidth: 550);
-    tp.paint(canvas, const Offset(0.0, 0.0));
-    var picture = recorder.endRecording();
-    final pngBytes = await picture.toImage(
-      tp.size.width.toInt(),
-      tp.size.height.toInt() - 2, // decrease padding
-    );
-    final byteData = await pngBytes.toByteData(format: ImageByteFormat.png);
-    return byteData!.buffer.asUint8List();
   }
 }
