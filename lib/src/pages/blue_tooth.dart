@@ -184,7 +184,7 @@ class _BlueToothState extends State<BlueTooth> {
     commands.add(command.addTextAlign(EpsonEPOSTextAlign.LEFT));
     commands.add(command.addFeedLine(4));
     commands.add(command.append('PRINT TESTE OK!\n'));
-    commands.add(command.rawData(Uint8List.fromList(await _customEscPos())));
+    //commands.add(command.rawData(Uint8List.fromList(await _customEscPos())));
     commands.add(command.addFeedLine(4));
     commands.add(command.addCut(EpsonEPOSCut.CUT_FEED));
     await EpsonEPOS.onPrint(printer, commands);
