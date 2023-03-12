@@ -31,7 +31,7 @@ class _LauncherState extends State<Launcher> {
     _pageWidget = <Widget>[
       const HomePage(),
       InPage(onSaved: () {
-        _onItemTapped(0);
+        _onItemTapped(_selectedIndex);
       }),
       const OutPage(),
     ];
