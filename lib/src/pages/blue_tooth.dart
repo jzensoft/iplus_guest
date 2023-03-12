@@ -31,7 +31,7 @@ class _BlueToothState extends State<BlueTooth> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Printer settings'),
+        title: const Text('Printer setting'),
       ),
       body: SafeArea(
         child: Padding(
