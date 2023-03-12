@@ -107,7 +107,10 @@ class PrintUtil {
         for (int i = 0; i < _devices.length; i++) {
           if (deviceAddress == _devices[i].address) {
             try {
-              await bluetoothPrint.disconnect();
+              var isConnected = await bluetoothPrint.isConnected;
+              if (isConnected!) {
+                await bluetoothPrint.disconnect();
+              }
             } catch (ex) {
               if (kDebugMode) {
                 print("Error = $ex");
