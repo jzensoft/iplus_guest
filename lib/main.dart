@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:iplus_guest/src/model/printer.dart';
 import 'package:iplus_guest/src/model/project.dart';
 import 'package:iplus_guest/src/model/user.dart';
 import 'package:iplus_guest/src/pages/launcher.dart';
@@ -9,8 +10,10 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(UserAdapter());
   Hive.registerAdapter(ProjectAdapter());
+  Hive.registerAdapter(PrinterAdapter());
   await Hive.openBox<User>('user');
   await Hive.openBox<Project>('project');
+  await Hive.openBox<Printer>('printer');
   runApp(const MyApp());
 }
 

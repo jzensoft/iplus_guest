@@ -14,7 +14,7 @@ import 'package:iplus_guest/src/widgets/clip.dart';
 import 'package:iplus_guest/src/widgets/paint.dart';
 
 import '../constants/api.dart';
-import 'blue_tooth.dart';
+import 'printer_page.dart';
 
 class InPage extends StatefulWidget {
   final VoidCallback onSaved;
@@ -68,11 +68,11 @@ class _InPageState extends State<InPage> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const BlueTooth(),
+                    builder: (context) => const PrinterPage(),
                   ),
                 );
               },
-              child: const Icon(Icons.bluetooth),
+              child: const Icon(Icons.print),
             ),
           ),
           Padding(

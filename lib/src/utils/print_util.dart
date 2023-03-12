@@ -1,138 +1,127 @@
-import 'dart:ui';
+import 'dart:developer';
 
-import 'package:blue_thermal_printer/blue_thermal_printer.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart' as fb;
-import 'package:image/image.dart' as im;
-import 'package:iplus_guest/src/utils/toast_util.dart';
+import 'package:epson_epos/epson_epos.dart';
+import 'package:esc_pos_utils/esc_pos_utils.dart';
+import 'package:iplus_guest/src/model/printer.dart';
+import 'package:iplus_guest/src/utils/boxes.dart';
 
-import '../db/print_database.dart';
+import 'toast_util.dart';
 
 class PrintUtil {
-  List<BluetoothDevice> _devices = [];
-  BlueThermalPrinter bluetoothPrint = BlueThermalPrinter.instance;
+
+  EpsonPrinterModel? getPrinter() {
+    final printer = Boxes.getPrinter();
+    print(printer.toMap());
+    return null;
+  }
 
   printData() async {
+    EpsonPrinterModel? printer = getPrinter();
+    if (printer != null) {
+      EpsonEPOSCommand command = EpsonEPOSCommand();
+      List<Map<String, dynamic>> commands = [];
+      commands.add(command.addTextAlign(EpsonEPOSTextAlign.LEFT));
+      commands.add(command.addFeedLine(4));
+      commands.add(command.append('PRINT TESTE OK!\n'));
+      //commands.add(command.rawData(Uint8List.fromList(await _customEscPos())));
+      commands.add(command.addFeedLine(4));
+      commands.add(command.addCut(EpsonEPOSCut.CUT_FEED));
+      await EpsonEPOS.onPrint(printer, commands);
+    } else {
+      showToastError("Not found printer");
+    }
+  }
+
+  printTest(EpsonPrinterModel printer) async {
     try {
-      await checkBluetooth(connected: () async {
-        List<Uint8List> imgList = [];
-        Uint8List imageInt = await getBillImage("លេខសំបុត្រ : 123455\n"
-            "ថ្ងៃទី : ១២ មីថុនា ២០២២\n"
-            "សរុប : 1000៛\n\n\n");
-        im.Image? receiptImg = im.decodePng(imageInt);
-
-        for (var i = 0; i <= receiptImg!.height; i += 200) {
-          im.Image cropedReceiptImg = im.copyCrop(receiptImg, 0, i, 470, 200);
-          Uint8List bytes = im.encodePng(cropedReceiptImg) as Uint8List;
-          imgList.add(bytes);
-        }
-
-        for (var element in imgList) {
-          bluetoothPrint.printImageBytes(element);
-        }
-        showToast("Successfully");
-      });
-    } catch (ex) {
-      if (kDebugMode) {
-        print("Error = $ex");
-      }
+      EpsonEPOSCommand command = EpsonEPOSCommand();
+      List<Map<String, dynamic>> commands = [];
+      commands.add(command.addTextAlign(EpsonEPOSTextAlign.LEFT));
+      commands.add(command.addFeedLine(4));
+      commands.add(command.append('PRINT TESTE OK!\n'));
+      commands.add(command.append('ทดสอบพิมพ์!\n'));
+      commands.add(command.addFeedLine(4));
+      commands.add(command.addCut(EpsonEPOSCut.CUT_FEED));
+      await EpsonEPOS.onPrint(printer, commands);
+      savePrinter(printer);
+    } catch (e) {
+      showToastError("$e");
     }
   }
 
-  Future<Uint8List> getBillImage(String label,
-      {double fontSize = 26, FontWeight fontWeight = FontWeight.w500}) async {
-    final recorder = PictureRecorder();
-    final canvas = Canvas(recorder);
-
-    /// Background
-    final backgroundPaint = Paint()..color = Colors.white;
-    const backgroundRect = Rect.fromLTRB(372, 10000, 0, 0);
-    final backgroundPath = Path()
-      ..addRRect(
-        RRect.fromRectAndRadius(backgroundRect, const Radius.circular(0)),
-      )
-      ..close();
-    canvas.drawPath(backgroundPath, backgroundPaint);
-
-    //Title
-    final ticketNum = TextPainter(
-      textDirection: TextDirection.rtl,
-      textAlign: TextAlign.left,
-      text: TextSpan(
-          text: label,
-          style: TextStyle(
-              color: Colors.black, fontSize: fontSize, fontWeight: fontWeight)),
-    );
-    ticketNum
-      ..layout(
-        maxWidth: 372,
-      )
-      ..paint(
-        canvas,
-        const Offset(0, 0),
-      );
-
-    canvas.restore();
-    final picture = recorder.endRecording();
-    final pngBytes =
-        await (await picture.toImage(372.toInt(), ticketNum.height.toInt() + 5))
-            .toByteData(format: ImageByteFormat.png);
-    return pngBytes!.buffer.asUint8List();
+  void savePrinter(EpsonPrinterModel data) {
+    final Printer printer = Printer()
+      ..ipAddress = data.ipAddress
+      ..bdAddress = data.bdAddress
+      ..macAddress = data.macAddress
+      ..model = data.model
+      ..series = data.series
+      ..target = data.target;
+    final box = Boxes.getPrinter();
+    box.add(printer);
   }
 
-  checkBluetooth({required Function() connected}) async {
-    fb.FlutterBluePlus.instance.state.listen((state) async {
-      if (state == fb.BluetoothState.on) {
-        await _checkListDeviceAvailable(connected: () {
-          connected();
-        });
-      } else {
-        showToastError("Bluetooth off");
-        await bluetoothPrint.isConnected.then((value) {
-          if (value!) {
-            bluetoothPrint.disconnect();
-          }
-        });
-      }
-    });
-  }
-
-  _checkListDeviceAvailable({required Function() connected}) async {
-    await _scanDevices();
-    if (_devices.isNotEmpty) {
-      String? deviceAddress = await getDeviceAddress();
-      if (deviceAddress!.isNotEmpty) {
-        for (int i = 0; i < _devices.length; i++) {
-          if (deviceAddress == _devices[i].address) {
-            try {
-              var isConnected = await bluetoothPrint.isConnected;
-              if (isConnected!) {
-                await bluetoothPrint.disconnect();
-              }
-            } catch (ex) {
-              if (kDebugMode) {
-                print("Error = $ex");
-              }
-            }
-            await bluetoothPrint.connect(_devices[i]);
-            showToast("Printer connected.");
-            connected();
-          }
-        }
-      }
-      showToastError("Connect printer failed..");
-    }
-  }
-
-  _scanDevices() async {
+  void onSetPrinterSetting(EpsonPrinterModel printer) async {
     try {
-      _devices = await bluetoothPrint.getBondedDevices();
-    } on PlatformException {
-      if (kDebugMode) {
-        print("Error no prepare devices founds.");
-      }
+      await EpsonEPOS.setPrinterSetting(printer, paperWidth: 80);
+    } catch (e) {
+      log("Error: $e");
     }
+  }
+
+  Future<List<int>> _customEscPos() async {
+    final profile = await CapabilityProfile.load();
+    final generator = Generator(PaperSize.mm58, profile);
+    List<int> bytes = [];
+
+    bytes += generator.text(
+        'Regular: aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ');
+    bytes += generator.text('Special 1: àÀ èÈ éÉ ûÛ üÜ çÇ ôÔ',
+        styles: const PosStyles(codeTable: 'CP1252'));
+    bytes += generator.text('Special 2: blåbærgrød',
+        styles: const PosStyles(codeTable: 'CP1252'));
+
+    bytes += generator.text('Bold text', styles: const PosStyles(bold: true));
+    bytes +=
+        generator.text('Reverse text', styles: const PosStyles(reverse: true));
+    bytes += generator.text('Underlined text',
+        styles: const PosStyles(underline: true), linesAfter: 1);
+    bytes += generator.text('Align left',
+        styles: const PosStyles(align: PosAlign.left));
+    bytes += generator.text('Align center',
+        styles: const PosStyles(align: PosAlign.center));
+    bytes += generator.text('Align right',
+        styles: const PosStyles(align: PosAlign.right), linesAfter: 1);
+    bytes += generator.qrcode('Barcode by escpos',
+        size: QRSize.Size4, cor: QRCorrection.H);
+    bytes += generator.feed(2);
+
+    bytes += generator.row([
+      PosColumn(
+        text: 'col3',
+        width: 3,
+        styles: const PosStyles(align: PosAlign.center, underline: true),
+      ),
+      PosColumn(
+        text: 'col6',
+        width: 6,
+        styles: const PosStyles(align: PosAlign.center, underline: true),
+      ),
+      PosColumn(
+        text: 'col3',
+        width: 3,
+        styles: const PosStyles(align: PosAlign.center, underline: true),
+      ),
+    ]);
+
+    bytes += generator.text('Text size 200%',
+        styles: const PosStyles(
+          height: PosTextSize.size2,
+          width: PosTextSize.size2,
+        ));
+
+    bytes += generator.reset();
+    bytes += generator.cut();
+    return bytes;
   }
 }
