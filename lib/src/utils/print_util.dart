@@ -3,32 +3,78 @@ import 'dart:developer';
 import 'package:epson_epos/epson_epos.dart';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'package:iplus_guest/src/model/printer.dart';
+import 'package:iplus_guest/src/model/project.dart';
+import 'package:iplus_guest/src/model/user.dart';
 import 'package:iplus_guest/src/utils/boxes.dart';
 
 import 'toast_util.dart';
 
 class PrintUtil {
-
   EpsonPrinterModel? getPrinter() {
-    final printer = Boxes.getPrinter();
-    print(printer.toMap());
+    final printerBox = Boxes.getPrinter();
+    final List<Printer> printers = [];
+    for (var item in printerBox.values.toList()) {
+      printers.add(item);
+    }
+    if (printers.isNotEmpty) {
+      EpsonPrinterModel epsonPrinterModel = EpsonPrinterModel();
+      epsonPrinterModel.ipAddress = printers
+          .elementAt(0)
+          .ipAddress;
+      epsonPrinterModel.bdAddress = printers
+          .elementAt(0)
+          .bdAddress;
+      epsonPrinterModel.macAddress = printers
+          .elementAt(0)
+          .macAddress;
+      epsonPrinterModel.model = printers
+          .elementAt(0)
+          .model;
+      epsonPrinterModel.series = printers
+          .elementAt(0)
+          .series;
+      epsonPrinterModel.target = printers
+          .elementAt(0)
+          .target;
+      epsonPrinterModel.type = printers
+          .elementAt(0)
+          .type;
+      return epsonPrinterModel;
+    }
     return null;
   }
 
-  printData() async {
-    EpsonPrinterModel? printer = getPrinter();
-    if (printer != null) {
-      EpsonEPOSCommand command = EpsonEPOSCommand();
-      List<Map<String, dynamic>> commands = [];
-      commands.add(command.addTextAlign(EpsonEPOSTextAlign.LEFT));
-      commands.add(command.addFeedLine(4));
-      commands.add(command.append('PRINT TESTE OK!\n'));
-      //commands.add(command.rawData(Uint8List.fromList(await _customEscPos())));
-      commands.add(command.addFeedLine(4));
-      commands.add(command.addCut(EpsonEPOSCut.CUT_FEED));
-      await EpsonEPOS.onPrint(printer, commands);
-    } else {
-      showToastError("Not found printer");
+  Project? getProjectData() {
+    final projectBox = Boxes.getProject();
+    final List<Project> projects = [];
+    for (var item in projectBox.values.toList()) {
+      projects.add(item);
+    }
+    if (projects.isNotEmpty) {
+      return projects.elementAt(0);
+    }
+    return null;
+  }
+
+  printData(User user) async {
+    try {
+      EpsonPrinterModel? printer = getPrinter();
+      if (printer != null) {
+        EpsonEPOSCommand command = EpsonEPOSCommand();
+        List<Map<String, dynamic>> commands = [];
+        commands.add(command.addTextAlign(EpsonEPOSTextAlign.LEFT));
+        commands.add(command.addFeedLine(4));
+        commands.add(command.append('PRINT TESTE OK!\n'));
+
+        //commands.add(command.rawData(Uint8List.fromList(await _customEscPos())));
+        commands.add(command.addFeedLine(4));
+        commands.add(command.addCut(EpsonEPOSCut.CUT_FEED));
+        await EpsonEPOS.onPrint(printer, commands);
+      } else {
+        showToastError("Not found printer");
+      }
+    } catch (e) {
+      log('$e');
     }
   }
 
@@ -56,7 +102,8 @@ class PrintUtil {
       ..macAddress = data.macAddress
       ..model = data.model
       ..series = data.series
-      ..target = data.target;
+      ..target = data.target
+      ..type = data.type;
     final box = Boxes.getPrinter();
     box.add(printer);
   }

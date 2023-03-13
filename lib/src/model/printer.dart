@@ -21,4 +21,7 @@ class Printer extends HiveObject {
 
   @HiveField(5)
   late String? target;
+
+  @HiveField(6)
+  late String? type;
 }

@@ -128,8 +128,6 @@ class _InPageState extends State<InPage> {
                   _buildOther(),
                   _sizeBox,
                   _buildButton(context),
-                  _sizeBox,
-                  _buildCameraButton(),
                 ],
               ),
             ),
@@ -211,7 +209,7 @@ class _InPageState extends State<InPage> {
             icon: const Icon(Icons.camera_alt_outlined),
             label: const Text("Detect Card"),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
+              backgroundColor: Colors.red,
               padding: const EdgeInsets.symmetric(
                 vertical: 10,
               ),
@@ -226,37 +224,36 @@ class _InPageState extends State<InPage> {
     return Row(
       children: [
         Expanded(
-          child: Container(
-            margin: const EdgeInsets.only(right: 15),
-            child: ElevatedButton.icon(
-              icon: const Icon(Icons.add),
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  _handleSave(
-                      _nameController.text.toString(),
-                      _vehicleRegistrationController.text.toString(),
-                      _houseNumberController.text.toString(),
-                      _otherController.text.toString());
-                }
-              },
-              label: const Text("บันทึก"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                padding: const EdgeInsets.symmetric(vertical: 10),
-              ),
+          child: ElevatedButton.icon(
+            icon: const Icon(Icons.save),
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                _handleSave(
+                    _nameController.text.toString(),
+                    _vehicleRegistrationController.text.toString(),
+                    _houseNumberController.text.toString(),
+                    _otherController.text.toString());
+              }
+            },
+            label: const Text("บันทึก"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              padding: const EdgeInsets.symmetric(vertical: 10),
             ),
           ),
         ),
+        const SizedBox(
+          width: 15,
+        ),
         Expanded(
-          child: Container(
-            margin: const EdgeInsets.only(left: 15),
-            child: ElevatedButton.icon(
-              onPressed: _handlePrint,
-              icon: const Icon(Icons.print),
-              label: const Text("พิมพ์"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal,
-                padding: const EdgeInsets.symmetric(vertical: 10),
+          child: ElevatedButton.icon(
+            onPressed: _startCamera,
+            icon: const Icon(Icons.camera_alt_outlined),
+            label: const Text("Detect Card"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              padding: const EdgeInsets.symmetric(
+                vertical: 10,
               ),
             ),
           ),
@@ -364,10 +361,6 @@ class _InPageState extends State<InPage> {
     }).catchError((err) {
       debugPrint(err);
     });
-  }
-
-  void _handlePrint() async {
-    PrintUtil().printData();
   }
 
   void _handleTakePicture(bool isDetectCard) async {
@@ -483,7 +476,7 @@ class _InPageState extends State<InPage> {
   }
 
   void _handleSave(String name, String vehicleRegistration, String houseNumber,
-      String other) {
+      String other) async {
     final User user = User()
       ..fullName = name
       ..vehicleRegistration = vehicleRegistration
@@ -493,16 +486,18 @@ class _InPageState extends State<InPage> {
       ..outTime = null
       ..printTime = null
       ..idNumber = _idNumber;
-
     final box = Boxes.getUser();
     box.add(user);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          "บันทึกเรียบร้อย",
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "บันทึกเรียบร้อย",
+          ),
         ),
-      ),
-    );
-    widget.onSaved();
+      );
+      widget.onSaved();
+    }
+    await PrintUtil().printData(user);
   }
 }

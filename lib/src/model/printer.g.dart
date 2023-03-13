@@ -22,13 +22,14 @@ class PrinterAdapter extends TypeAdapter<Printer> {
       ..macAddress = fields[2] as String?
       ..model = fields[3] as String?
       ..series = fields[4] as String?
-      ..target = fields[5] as String?;
+      ..target = fields[5] as String?
+      ..type = fields[6] as String?;
   }
 
   @override
   void write(BinaryWriter writer, Printer obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.ipAddress)
       ..writeByte(1)
@@ -40,7 +41,9 @@ class PrinterAdapter extends TypeAdapter<Printer> {
       ..writeByte(4)
       ..write(obj.series)
       ..writeByte(5)
-      ..write(obj.target);
+      ..write(obj.target)
+      ..writeByte(6)
+      ..write(obj.type);
   }
 
   @override
