@@ -109,7 +109,7 @@ class PrintUtil {
     final profile = await CapabilityProfile.load();
     final generator = Generator(PaperSize.mm58, profile);
 
-    final formatter = DateFormat('d MMMM y');
+    final formatter = DateFormat('d MMMM yyyy');
     final now = DateTime.now();
     final newDate = DateTime(now.year + 543, now.month, now.day);
 
