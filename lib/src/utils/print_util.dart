@@ -54,6 +54,7 @@ class PrintUtil {
         final formatter = DateFormat('d MMMM yyyy');
         final now = DateTime.now();
         final newDate = DateTime(now.year + 543, now.month, now.day);
+        const emptyString = "  ";
 
         commands.add(command.addTextAlign(EpsonEPOSTextAlign.CENTER));
         commands.add(command.addFeedLine(4));
@@ -64,22 +65,23 @@ class PrintUtil {
 
         commands.add(command.addTextAlign(EpsonEPOSTextAlign.LEFT));
         commands.add(command.append("บัตรผู้มาติดต่อ\n"));
-        commands.add(command.append("\tวันที่ : ${formatter.format(newDate)}\n"));
-        commands.add(command.append("\tชื่อ-นามสกุล : ${user.fullName}\n"));
+        commands.add(command.append("$emptyStringวันที่ : ${formatter.format(newDate)}\n"));
+        commands.add(command.append("$emptyStringชื่อ-นามสกุล : ${user.fullName}\n"));
         commands
-            .add(command.append("\tทะเบียนรถ : ${user.vehicleRegistration}\n"));
-        commands.add(command.append("\tเบอร์ติดต่อ : ${user.other}\n"));
+            .add(command.append("$emptyStringทะเบียนรถ : ${user.vehicleRegistration}\n"));
+        commands.add(command.append("$emptyStringเบอร์ติดต่อ : ${user.other}\n"));
         commands
-            .add(command.append("\tติดต่อบ้านเลขที่ : ${user.houseNumber}\n"));
+            .add(command.append("$emptyStringติดต่อบ้านเลขที่ : ${user.houseNumber}\n"));
         commands.add(command.append(
-            "\tเวลาเข้า : ${DateFormat.Hms().format(user.inTime!)} น.\n"));
-        commands.add(command.append("\tรายละเอียด : ${user.other}\n"));
+            "$emptyStringเวลาเข้า : ${DateFormat.Hms().format(user.inTime!)} น.\n"));
+        commands.add(command.append("$emptyStringรายละเอียด : ${user.other}\n"));
         commands.add(command.addTextAlign(EpsonEPOSTextAlign.CENTER));
         commands.add(command.append("สำหรับเจ้าของบ้าน\n"));
         commands.add(command.addFeedLine(5));
         commands.add(command.append("_____________________________________\n"));
         commands.add(command.addFeedLine(1));
         commands.add(command.append("_____________________________________\n"));
+        commands.add(command.addFeedLine(1));
         commands.add(command.append(
             "กรุณาให้เจ้าของบ้านประทับตรายางหรือเซ็นต์ชื่อ กำกับทุกครั้ง\n"));
         commands.add(command.addFeedLine(2));

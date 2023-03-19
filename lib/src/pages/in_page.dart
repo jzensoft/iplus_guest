@@ -269,7 +269,7 @@ class _InPageState extends State<InPage> {
       children: [
         TextFormField(
           controller: _otherController,
-          maxLength: 250,
+          maxLength: 30,
           decoration: const InputDecoration(
             labelText: "อื่นๆ เพิ่มเติม",
             border: OutlineInputBorder(),
