@@ -273,7 +273,7 @@ class _SettingPageState extends State<SettingPage> {
             },
             label: Text(project == null ? "บันทึก" : "แก้ไขข้อมูล"),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
+              backgroundColor: Colors.teal,
               padding: const EdgeInsets.symmetric(vertical: 10),
             ),
           ),

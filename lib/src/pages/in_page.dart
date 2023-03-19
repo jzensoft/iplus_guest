@@ -238,7 +238,7 @@ class _InPageState extends State<InPage> {
             },
             label: const Text("บันทึก"),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
+              backgroundColor: Colors.teal,
               padding: const EdgeInsets.symmetric(vertical: 10),
             ),
           ),
@@ -252,7 +252,7 @@ class _InPageState extends State<InPage> {
             icon: const Icon(Icons.camera_alt_outlined),
             label: const Text("Detect Card"),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: Colors.deepOrange,
               padding: const EdgeInsets.symmetric(
                 vertical: 10,
               ),
