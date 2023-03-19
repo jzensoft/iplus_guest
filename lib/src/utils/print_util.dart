@@ -122,25 +122,33 @@ class PrintUtil {
 
     bytes += generator.text("บัตรผู้มาติดต่อ",
         styles: const PosStyles(
-          bold: true,
-          height: PosTextSize.size2,
-          width: PosTextSize.size2,
-        ));
-    bytes += generator.text("วันที่ : ${formatter.format(newDate)}");
-    bytes += generator.text("ชื่อ-นามสกุล : ${user.fullName}");
-    bytes += generator.text("ทะเบียนรถ : ${user.vehicleRegistration}");
-    bytes += generator.text("เบอร์ติดต่อ : ${user.other}");
-    bytes += generator.text("ติดต่อบ้านเลขที่ : ${user.houseNumber}");
-    bytes += generator
-        .text("เวลาเข้า : ${DateFormat.Hms().format(user.inTime!)} น.");
-    bytes += generator.text("รายละเอียด", styles: const PosStyles(bold: true));
+            bold: true,
+            height: PosTextSize.size2,
+            width: PosTextSize.size2,
+            codeTable: 'CP1252'));
+    bytes += generator.text("วันที่ : ${formatter.format(newDate)}",
+        styles: const PosStyles(codeTable: 'CP1252'));
+    bytes += generator.text("ชื่อ-นามสกุล : ${user.fullName}",
+        styles: const PosStyles(codeTable: 'CP1252'));
+    bytes += generator.text("ทะเบียนรถ : ${user.vehicleRegistration}",
+        styles: const PosStyles(codeTable: 'CP1252'));
+    bytes += generator.text("เบอร์ติดต่อ : ${user.other}",
+        styles: const PosStyles(codeTable: 'CP1252'));
+    bytes += generator.text("ติดต่อบ้านเลขที่ : ${user.houseNumber}",
+        styles: const PosStyles(codeTable: 'CP1252'));
+    bytes += generator.text(
+        "เวลาเข้า : ${DateFormat.Hms().format(user.inTime!)} น.",
+        styles: const PosStyles(codeTable: 'CP1252'));
+    bytes += generator.text("รายละเอียด",
+        styles: const PosStyles(bold: true, codeTable: 'CP1252'));
     bytes += generator.text("สำหรับเจ้าของบ้าน",
-        styles: const PosStyles(bold: true, align: PosAlign.center));
+        styles: const PosStyles(
+            bold: true, align: PosAlign.center, codeTable: 'CP1252'));
     bytes += generator.feed(5);
     bytes += generator.emptyLines(2);
     bytes += generator.text(
         "กรุณาให้เจ้าของบ้านประทับตรายางหรือเซ็นต์ชื่อ กำกับทุกครั้ง",
-        styles: const PosStyles(bold: true));
+        styles: const PosStyles(bold: true, codeTable: 'CP1252'));
 
     bytes += generator.reset();
     bytes += generator.cut();
