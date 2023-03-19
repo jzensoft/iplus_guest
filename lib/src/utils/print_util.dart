@@ -51,11 +51,32 @@ class PrintUtil {
       if (printer != null) {
         EpsonEPOSCommand command = EpsonEPOSCommand();
         List<Map<String, dynamic>> commands = [];
-        //commands.add(command.addTextAlign(EpsonEPOSTextAlign.LEFT));
+        final formatter = DateFormat('d MMMM yyyy');
+        final now = DateTime.now();
+        final newDate = DateTime(now.year + 543, now.month, now.day);
+
+        commands.add(command.addTextAlign(EpsonEPOSTextAlign.LEFT));
         commands.add(command.addFeedLine(4));
-        //commands.add(command.append('PRINT TESTE OK!\n'));
-        commands.add(command
-            .rawData(Uint8List.fromList(await _createData(project, user))));
+
+        if (project != null) {
+          commands.add(command.append("${project.villageName}"));
+        }
+
+        commands.add(command.append("บัตรผู้มาติดต่อ\n"));
+        commands.add(command.append("วันที่ : ${formatter.format(newDate)}\n"));
+        commands.add(command.append("ชื่อ-นามสกุล : ${user.fullName}\n"));
+        commands.add(command.append("ทะเบียนรถ : ${user.vehicleRegistration}\n"));
+        commands.add(command.append("เบอร์ติดต่อ : ${user.other}\n"));
+        commands.add(command.append("ติดต่อบ้านเลขที่ : ${user.houseNumber}\n"));
+        commands.add(command.append("เวลาเข้า : ${DateFormat.Hms().format(user.inTime!)} น.\n"));
+        commands.add(command.append("รายละเอียด\n"));
+        commands.add(command.addTextAlign(EpsonEPOSTextAlign.CENTER));
+        commands.add(command.append("สำหรับเจ้าของบ้าน\n"));
+        commands.add(command.addFeedLine(5));
+        commands.add(command.append("กรุณาให้เจ้าของบ้านประทับตรายางหรือเซ็นต์ชื่อ กำกับทุกครั้ง\n"));
+
+        // commands.add(command
+        //     .rawData(Uint8List.fromList(await _createData(project, user))));
         commands.add(command.addFeedLine(4));
         commands.add(command.addCut(EpsonEPOSCut.CUT_FEED));
         await EpsonEPOS.onPrint(printer, commands);
