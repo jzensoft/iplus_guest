@@ -24,7 +24,9 @@ class Item extends StatelessWidget {
         }
       },
       child: Card(
-        color: user.isOut ? Colors.white60 : Theme.of(context).colorScheme.onSecondary,
+        color: user.isOut
+            ? Colors.white60
+            : Theme.of(context).colorScheme.onSecondary,
         child: Padding(
           padding: const EdgeInsets.all(14.0),
           child: Column(
@@ -58,7 +60,7 @@ class Item extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      "เวลาเข้า ${DateFormat.Hms().format(user.inTime!)}",
+                      "เวลาเข้า ${DateFormat.Hm().format(user.inTime!)}",
                       style: const TextStyle(
                         fontSize: 14,
                       ),
@@ -68,7 +70,7 @@ class Item extends StatelessWidget {
                     child: Text(
                       isIn
                           ? "บ้านเลขที่ ${user.houseNumber}"
-                          : "เวลาออก ${DateFormat.Hms().format(user.outTime ?? user.inTime!)}",
+                          : "เวลาออก ${DateFormat.Hm().format(user.outTime ?? user.inTime!)}",
                       style: const TextStyle(
                         fontSize: 14,
                       ),

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:epson_epos/epson_epos.dart';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
+import 'package:intl/intl.dart';
 import 'package:iplus_guest/src/model/printer.dart';
 import 'package:iplus_guest/src/model/project.dart';
 import 'package:iplus_guest/src/model/user.dart';
@@ -107,6 +108,11 @@ class PrintUtil {
   Future<List<int>> _createData(Project? project, User user) async {
     final profile = await CapabilityProfile.load();
     final generator = Generator(PaperSize.mm58, profile);
+
+    final formatter = DateFormat('d MMMM y');
+    final now = DateTime.now();
+    final newDate = DateTime(now.year + 543, now.month, now.day);
+
     List<int> bytes = [];
 
     if (project != null) {
@@ -120,12 +126,13 @@ class PrintUtil {
           height: PosTextSize.size2,
           width: PosTextSize.size2,
         ));
-    bytes += generator.text("วันที่ : ${user.inTime}");
+    bytes += generator.text("วันที่ : ${formatter.format(newDate)}");
     bytes += generator.text("ชื่อ-นามสกุล : ${user.fullName}");
     bytes += generator.text("ทะเบียนรถ : ${user.vehicleRegistration}");
     bytes += generator.text("เบอร์ติดต่อ : ${user.other}");
     bytes += generator.text("ติดต่อบ้านเลขที่ : ${user.houseNumber}");
-    bytes += generator.text("เวลาเข้า : ${user.inTime}");
+    bytes += generator
+        .text("เวลาเข้า : ${DateFormat.Hms().format(user.inTime!)} น.");
     bytes += generator.text("รายละเอียด", styles: const PosStyles(bold: true));
     bytes += generator.text("สำหรับเจ้าของบ้าน",
         styles: const PosStyles(bold: true, align: PosAlign.center));
