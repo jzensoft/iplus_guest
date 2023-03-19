@@ -69,7 +69,7 @@ class PrintUtil {
         commands.add(command.append("$emptyStringชื่อ-นามสกุล : ${user.fullName}\n"));
         commands
             .add(command.append("$emptyStringทะเบียนรถ : ${user.vehicleRegistration}\n"));
-        commands.add(command.append("$emptyStringเบอร์ติดต่อ : ${user.other}\n"));
+        commands.add(command.append("$emptyStringเบอร์ติดต่อ : -\n"));
         commands
             .add(command.append("$emptyStringติดต่อบ้านเลขที่ : ${user.houseNumber}\n"));
         commands.add(command.append(
