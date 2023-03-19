@@ -78,10 +78,6 @@ class PrintUtil {
         commands.add(command.addTextAlign(EpsonEPOSTextAlign.CENTER));
         commands.add(command.append("สำหรับเจ้าของบ้าน\n"));
         commands.add(command.addFeedLine(5));
-        commands.add(command.append("_____________________________________\n"));
-        commands.add(command.addFeedLine(1));
-        commands.add(command.append("_____________________________________\n"));
-        commands.add(command.addFeedLine(1));
         commands.add(command.append(
             "กรุณาให้เจ้าของบ้านประทับตรายางหรือเซ็นต์ชื่อ กำกับทุกครั้ง\n"));
         commands.add(command.addFeedLine(2));
