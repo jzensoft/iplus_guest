@@ -58,6 +58,7 @@ class _InPageState extends State<InPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        elevation: 0,
         title: const Text(
           "บันทึกการเข้า",
         ),

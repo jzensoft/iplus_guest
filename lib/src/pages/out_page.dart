@@ -19,6 +19,7 @@ class _OutPageState extends State<OutPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: const Text("ประวัติการออก โครงการ"),
         actions: [
           Padding(

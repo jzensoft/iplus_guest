@@ -31,6 +31,7 @@ class _SettingPageState extends State<SettingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: const Text("ตั้งค่า"),
       ),
       body: ValueListenableBuilder<Box<Project>>(

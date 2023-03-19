@@ -32,6 +32,7 @@ class _PrinterPageState extends State<PrinterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: const Text('Printer'),
       ),
       body: SafeArea(
